@@ -2,9 +2,9 @@ cmake_minimum_required (VERSION 3.29)
 
 project (HelloTriangle)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMake")
 
 # Add option to enable/disable C++ 20 module
 option(ENABLE_CPP20_MODULE "Enable C++ 20 module support for Vulkan" ON)
@@ -38,7 +38,6 @@ if(ENABLE_CPP20_MODULE)
           Vulkan::Vulkan
   )
 
-  set_target_properties(VulkanCppModule PROPERTIES CXX_STANDARD 20)
 
   # Precompile the C++ standard library module for Clang + libc++
   set(STD_MODULE_SOURCE "/usr/share/libc++/v1/std.cppm")
@@ -61,18 +60,6 @@ if(ENABLE_CPP20_MODULE)
   )
 
   add_dependencies(VulkanCppModule StdModule)
-
-  # Add MSVC-specific compiler options for proper C++ module support
-  if(MSVC)
-    target_compile_options(VulkanCppModule PRIVATE
-      /std:c++latest      # Use latest C++ standard for better module support
-      /permissive-        # Standards conformance mode
-      /Zc:__cplusplus     # Enable correct __cplusplus macro
-      /EHsc               # Enable C++ exception handling
-      /Zc:preprocessor    # Use conforming preprocessor
-      /translateInclude   # Automatically translate #include to import for standard library
-    )
-  endif()
 
   target_sources(VulkanCppModule
           PUBLIC
@@ -103,51 +90,7 @@ endif()
 
 
 add_executable (glslang::validator IMPORTED)
-find_program (GLSLANG_VALIDATOR "glslangValidator" HINTS $ENV{VULKAN_SDK}/bin REQUIRED)
-set_property (TARGET glslang::validator PROPERTY IMPORTED_LOCATION "${GLSLANG_VALIDATOR}")
-find_program(SLANGC_EXECUTABLE slangc HINTS $ENV{VULKAN_SDK}/bin REQUIRED)
 
-function (add_shaders_target TARGET)
-  cmake_parse_arguments ("SHADER" "" "CHAPTER_NAME" "SOURCES" ${ARGN})
-  set (SHADERS_DIR ${SHADER_CHAPTER_NAME}/shaders)
-  add_custom_command (
-    OUTPUT ${SHADERS_DIR}
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${SHADERS_DIR}
-    )
-  add_custom_command (
-    OUTPUT ${SHADERS_DIR}/frag.spv ${SHADERS_DIR}/vert.spv
-    COMMAND glslang::validator
-    ARGS --target-env vulkan1.0 ${SHADER_SOURCES} --quiet
-    WORKING_DIRECTORY ${SHADERS_DIR}
-    DEPENDS ${SHADERS_DIR} ${SHADER_SOURCES}
-    COMMENT "Compiling Shaders"
-    VERBATIM
-    )
-  add_custom_target (${TARGET} DEPENDS ${SHADERS_DIR}/frag.spv ${SHADERS_DIR}/vert.spv)
-endfunction ()
-
-function (add_slang_shader_target TARGET)
-  cmake_parse_arguments ("SHADER" "" "CHAPTER_NAME" "SOURCES" ${ARGN})
-  set (SHADERS_DIR ${SHADER_CHAPTER_NAME}/shaders)
-  file(GLOB HAS_COMPUTE ${CHAPTER_SHADER}.comp)
-  set (ENTRY_POINTS -entry vertMain -entry fragMain)
-  if(HAS_COMPUTE)
-    list(APPEND ENTRY_POINTS -entry compMain)
-  endif()
-  add_custom_command (
-          OUTPUT ${SHADERS_DIR}
-          COMMAND ${CMAKE_COMMAND} -E make_directory ${SHADERS_DIR}
-  )
-  add_custom_command (
-          OUTPUT  ${SHADERS_DIR}/slang.spv
-          COMMAND ${SLANGC_EXECUTABLE} ${SHADER_SOURCES} -target spirv -profile spirv_1_4+spvRayQueryKHR -emit-spirv-directly -fvk-use-entrypoint-name ${ENTRY_POINTS} -o slang.spv
-          WORKING_DIRECTORY ${SHADERS_DIR}
-          DEPENDS ${SHADERS_DIR} ${SHADER_SOURCES}
-          COMMENT "Compiling Slang Shaders"
-          VERBATIM
-  )
-  add_custom_target (${TARGET} DEPENDS ${SHADERS_DIR}/slang.spv)
-endfunction()
 
 add_executable(HelloTriangle main.cpp)
 
@@ -159,7 +102,7 @@ if(ENABLE_CPP20_MODULE)
 endif()
 
 target_link_libraries(HelloTriangle
-    Vulkan::Vulkan
+    Vulkan::cppm
     glfw
     glm::glm
 )
