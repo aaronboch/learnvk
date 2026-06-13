@@ -1,10 +1,14 @@
 [
-  {
-    "label": "build",
-    "command": "cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  -S . -B build -G Ninja && cmake --build build",
-  },
-  {
-    "label": "build-run",
-    "command": "cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  -S . -B build -G Ninja && cmake --build build && build/HelloTriangle",
-  },
+    {
+        "label": "build",
+        "command": "cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  -S . -B build -G Ninja && cmake --build build",
+    },
+    {
+        "label": "build-run",
+        "command": "cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  -S . -B build -G Ninja && cmake --build build && build/HelloTriangle",
+    },
+    {
+        "label": "run",
+        "command": "build/HelloTriangle",
+    },
 ]
