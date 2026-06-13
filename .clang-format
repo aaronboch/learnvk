@@ -1,0 +1,9 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+PointerAlignment: Left # int* p (instead of int *p)
+FixNamespaceComments: true
+NamespaceIndentation: All
+AllowShortFunctionsOnASingleLine: None

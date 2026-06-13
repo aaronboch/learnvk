@@ -3,37 +3,36 @@
 #else
 import vulkan_hpp;
 #endif
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include <cstdlib>
-#include <iostream>
-#include <stdexcept>
+import std;
 
 class HelloTriangleApplication {
-public:
-  void run() {
-    std::cout << "Hello Triangle!" << std::endl;
-    initVulkan();
-    mainLoop();
-    cleanup();
-  }
+  public:
+    void run() {
+        std::cout << "Hello Triangle!" << std::endl;
+        initVulkan();
+        mainLoop();
+        cleanup();
+    }
 
-private:
-  void initVulkan() {}
+  private:
+    void initVulkan() {}
 
-  void mainLoop() {}
+    void mainLoop() {}
 
-  void cleanup() {}
+    void cleanup() {}
 };
 
 int main() {
-  try {
-    HelloTriangleApplication app;
-    app.run();
-  } catch (const std::exception &e) {
-    std::cerr << e.what() << std::endl;
-    return EXIT_FAILURE;
-  }
+    try {
+        HelloTriangleApplication app;
+        app.run();
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 
-  return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
