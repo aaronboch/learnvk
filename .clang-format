@@ -7,3 +7,4 @@ PointerAlignment: Left # int* p (instead of int *p)
 FixNamespaceComments: true
 NamespaceIndentation: All
 AllowShortFunctionsOnASingleLine: None
+ColumnLimit: 120
